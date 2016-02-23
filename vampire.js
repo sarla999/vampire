@@ -17,8 +17,17 @@ casper.userAgent('Mozilla/5.0 (iPhone; CPU iPhone OS 6_0 like Mac OS X) AppleWeb
 
 
 casper.thenOpen(login_page,function(){
-
-	this.capture('test.png');
+	
+	var login_sign = this.evaluate(function(){
+		return __utils__.exists('.jump_c');
+	});	
+	
+	if(login_sign){
+		casper.echo('you are login');
+		casper.exit();
+	}else{
+		this.capture('test.png');
+	}
 
 });
 
@@ -42,6 +51,5 @@ casper.then(function(){
 	});
 
 });
-
 
 casper.run();
