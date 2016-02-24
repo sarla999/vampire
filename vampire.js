@@ -11,6 +11,7 @@ var casper = require('casper').create({
 var landing_page = 'http://bbs.vrzy.com';
 var login_page = 'http://bbs.vrzy.com/member.php?mod=logging&action=login&mobile=2';
 var list_page = 'http://bbs.vrzy.com/forum.php?mod=forumdisplay&fid=43&page=1&mobile=2';
+var thread_lists = [];
 
 
 casper.start();
@@ -46,7 +47,7 @@ casper.thenOpen(login_page,function(){
 
 casper.then(function(){
 
-	this.wait(6000,function(){
+	this.wait(8000,function(){
 		this.click('.btn4');
 	});
 	
@@ -66,7 +67,12 @@ casper.thenOpen(list_page,function(){
 					return __utils__.exists('#waterfall');
 				});	
 			},function then(){
-				this.capture('list.png');
+				//this.capture('list.png');
+				this.evaluate(function(){
+						var nodelists = document.querySelectorAll('div.imgItem.masonry-brick>a');
+						thread_lists = [].slice.call(nodelists);
+						console.log(thread_list);
+					});
 				});
 	
 });
