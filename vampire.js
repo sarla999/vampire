@@ -10,6 +10,7 @@ var casper = require('casper').create({
 
 var landing_page = 'http://bbs.vrzy.com';
 var login_page = 'http://bbs.vrzy.com/member.php?mod=logging&action=login&mobile=2';
+var list_page = 'http://bbs.vrzy.com/forum.php?mod=forumdisplay&fid=43&page=1&mobile=2';
 
 
 casper.start();
@@ -18,38 +19,56 @@ casper.userAgent('Mozilla/5.0 (iPhone; CPU iPhone OS 6_0 like Mac OS X) AppleWeb
 
 casper.thenOpen(login_page,function(){
 	
-	var login_sign = this.evaluate(function(){
-		return __utils__.exists('.jump_c');
-	});	
-	
-	if(login_sign){
-		casper.echo('you are login');
-		casper.exit();
-	}else{
-		this.capture('test.png');
-	}
+//	var login_sign = this.evaluate(function(){
+//		return __utils__.exists('.jump_c');
+//	});	
 
+	
+//	if(login_sign){
+//		casper.echo('you are login');
+//		casper.exit();
+//	}else{
+		this.capture('test.png');
+		system.stdout.writeLine('input verification code:');
+		var vcode = system.stdin.readLine();
+
+		this.fill('form#loginform',{
+			'username': 'sarla999',
+			'password' : '620519',
+			'seccodeverify' : vcode
+
+			},true);
+
+//		}
+		
 });
 
 
 casper.then(function(){
 
-	system.stdout.writeLine('input verification code:');
-	var vcode = system.stdin.readLine();
-
-	this.fill('form#loginform',{
-		'username': 'sarla999',
-		'password' : '620519',
-		'seccodeverify' : vcode
-
-	},true);
-	
-	this.wait(5000,function(){
-
-		this.capture('login.png');
-	
+	this.wait(6000,function(){
+		this.click('.btn4');
 	});
+	
+	this.wait(3000,function(){
+		this.click('.btForum');
+	});
+	
+	//this.wait(2000,function(){
+	//	this.capture('login.png');
+	//});
+});
 
+
+casper.thenOpen(list_page,function(){
+	this.waitFor(function check(){
+		return this.evaluate(function(){
+					return __utils__.exists('#waterfall');
+				});	
+			},function then(){
+				this.capture('list.png');
+				});
+	
 });
 
 casper.run();
