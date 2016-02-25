@@ -1,4 +1,3 @@
-
 var system = require('system');
 var casper = require('casper').create({
 
@@ -11,7 +10,7 @@ var casper = require('casper').create({
 var landing_page = 'http://bbs.vrzy.com';
 var login_page = 'http://bbs.vrzy.com/member.php?mod=logging&action=login&mobile=2';
 var list_page = 'http://bbs.vrzy.com/forum.php?mod=forumdisplay&fid=43&page=1&mobile=2';
-var thread_lists = [];
+//var thread_lists = [];
 
 
 casper.start();
@@ -34,7 +33,7 @@ casper.thenOpen(login_page,function(){
 		var vcode = system.stdin.readLine();
 
 		this.fill('form#loginform',{
-			'username': 'sarla999',
+			'username': 'vrjingling',
 			'password' : '620519',
 			'seccodeverify' : vcode
 
@@ -67,11 +66,12 @@ casper.thenOpen(list_page,function(){
 					return __utils__.exists('#waterfall');
 				});	
 			},function then(){
-				//this.capture('list.png');
-				this.evaluate(function(){
-						var nodelists = document.querySelectorAll('div.imgItem.masonry-brick>a');
-						thread_lists = [].slice.call(nodelists);
-						console.log(thread_list);
+					this.wait(5000,function(){
+						var listsnode = document.querySelectorAll('div.imgItem a');
+						//var thread_lists = Array.prototype.slice.call(listsnode,0);
+						//this.echo(thread_lists[0]);
+						this.echo(listsnode.length);
+						this.capture('list.png');
 					});
 				});
 	
