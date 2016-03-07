@@ -35,11 +35,11 @@ casper.thenOpen(login_page,function(){
 //jump to lists page
 casper.then(function(){
 
-	this.wait(5000,function(){
+	this.wait(3000,function(){
 		this.click('.btn4');
 	});
 	
-	this.wait(3000,function(){
+	this.wait(2000,function(){
 		this.click('.btForum');
 	});
 	
@@ -60,12 +60,22 @@ casper.thenOpen(list_page,function(){
 //open thread url and replay
 casper.then(function(){
 	
-	casper.each(thread_lists,function(self,link){
-		
+	casper.each(thread_lists,function(self,link){	
+
 		self.thenOpen(base_url+link,function(){
-			this.wait(2000,function(){
-				this.click('.viewBtn');
-				this.capture('fastreplay.png');
+			this.echo(base_url+link);
+			var formhash = this.evaluate(function(){
+				return document.querySelector('#fastpostform input').value;
+
+			});
+			this.echo(formhash);
+			this.wait(3000,function(){
+				this.fill('form#fastpostform',{
+					'message':'wo xi huan bu cuo ya ding',
+					'formhash' : formhash,
+					'replysubmit' : '回复'
+				},true);
+				//this.capture('fastreplay.png');
 				casper.exit();
 			});
 		});

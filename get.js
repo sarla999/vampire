@@ -16,7 +16,6 @@ function open_url(baseurl,param){
 		};
 
 
-
 		var req = http.request(options,function(res){
 
 			var htmlcode = '';
@@ -27,7 +26,10 @@ function open_url(baseurl,param){
 
 			res.on('end',function(){
 				//console.log(htmlcode);
-				resolve(htmlcode);
+				var result = [];
+				result.push(baseurl+param);
+				result.push(htmlcode);
+				resolve(result);
 			});
 		});
 
@@ -42,17 +44,78 @@ function open_url(baseurl,param){
 }
 
 
-function filter_html(htmlcode,keywords){
+//get final thread page url
+function get_threads_url(htmlcode){
 
 	$ = cheerio.load(htmlcode);
-		
+	var nodelists = $('div.imgItem').children('a');
+	var lists = [];
+	nodelists.map(function(index,elem){
+		lists[index] = $(this).attr('href');
+	});
 
+	return lists;
+}
+
+//get categroy list page url
+function get_cate_url(htmlcode){
+	
+	$ = cheerio.load(htmlcode);
+	var nodelists = $('#ttp_all').nextAll('li').children('a');
+	var lists = [];
+	nodelists.map(function(index,elem){
+		lists[index] = $(this).attr('href');
+	});
+
+	return lists;
+}
+
+//gen page lists by page num
+function gen_page_nums(htmlcode){
+	$ = cheerio.load(htmlcode);
+	var pages = $('div.pg').children('label').children('span').attr('title');
+
+	var page_lists = [];
+
+	if(typeof(pages) == 'undefined'){
+		page_lists.push('page=1');
+	}else{
+		var nums = /[0-9]+/.exec(pages)[0];
+		for(var i=1 ; i<=nums ; i++){
+			page_lists.push('page='+i);
+		}
+	}
+
+	return page_lists;
 }
 
 
-open_url('bbs.vrzy.com','/forum.php?mod=forumdisplay&fid=43&page=3').then(function(value){
+var base_url = 'bbs.vrzy.com';
+var landing_page = '/forum.php?mod=forumdisplay&fid=43&mobile=2';
 
-	console.log(value);
+open_url(base_url,landing_page).then(function(value){
+
+	var cate_page = get_cate_url(value[1]);
+
+	for(var i in cate_page){
+		var cate_page_url = '/'+cate_page[i];
+
+		open_url(base_url,cate_page_url).then(function(value){
+			var cate_sub_page_url = [];
+			cate_sub_page_url.push(gen_page_nums(value[1]));
+
+			for(var j in cate_sub_page_url){
+				if(cate_sub_page_url[j].length == 1){
+					var thread_url_lists = get_threads_url(value[1]);					
+				}
+			}
+			
+			console.log(thread_url_lists);
+		}).catch(function(error){
+			console.log(error);
+		});	
+	}
+
 
 }).catch(function(error){
 	console.log(error);
