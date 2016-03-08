@@ -81,7 +81,7 @@ function gen_page_nums(htmlcode){
 		page_lists.push('page=1');
 	}else{
 		var nums = /[0-9]+/.exec(pages)[0];
-		for(var i=1 ; i<=nums ; i++){
+		for(var i=2 ; i<=nums ; i++){
 			page_lists.push('page='+i);
 		}
 	}
@@ -107,6 +107,16 @@ open_url(base_url,landing_page).then(function(value){
 			for(var j in cate_sub_page_url){
 				if(cate_sub_page_url[j].length == 1){
 					var thread_url_lists = get_threads_url(value[1]);					
+					//save to db
+				}else{
+					var thread_url_lists = get_threads_url(value[1]);					
+					//save to db
+					for(var v in cate_sub_page_url[j]){
+						//open url
+						//save to db
+
+					}
+
 				}
 			}
 			
