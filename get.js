@@ -1,6 +1,12 @@
 var http = require('http');
 var cheerio = require('cheerio');
 
+var MongoClient = require('mongodb').MongoClient,
+  test = require('assert');
+var url = 'mongodb://localhost:27017/vampire';
+
+
+
 function open_url(baseurl,param){
 
 	return new Promise(function(resolve, reject){
@@ -89,6 +95,27 @@ function gen_page_nums(htmlcode){
 	return page_lists;
 }
 
+//save url to db
+function save_data(pagelists){
+	for(var i in pagelists){
+		if(pagelists[i] != 'undefined'){
+			//var data = {'site':'vrzy.com','url':pagelists[i],'status':0}
+			console.log(pagelists[i])
+			/*MongoClient.connect(url , function(err,db){
+				var col = db.collection('tasks');
+
+				col.insert(data,function(err,result){
+					//test.equal(null, err);
+					console.log(result);
+				});
+
+			});*/
+
+		}
+	}
+
+}
+
 
 var base_url = 'bbs.vrzy.com';
 var landing_page = '/forum.php?mod=forumdisplay&fid=43&mobile=2';
@@ -108,19 +135,30 @@ open_url(base_url,landing_page).then(function(value){
 				if(cate_sub_page_url[j].length == 1){
 					var thread_url_lists = get_threads_url(value[1]);					
 					//save to db
+					save_data(thread_url_lists);
 				}else{
 					var thread_url_lists = get_threads_url(value[1]);					
 					//save to db
+					save_data(thread_url_lists);
 					for(var v in cate_sub_page_url[j]){
-						//open url
-						//save to db
+
+						var query = value[0].substr(12)+'&'+cate_sub_page_url[j][v];
+						open_url(base_url,query).then(function(value){
+							var thread_url_lists = get_threads_url(value[1]);
+							save_data(thread_url_lists);
+								//console.log(thread_url_lists);
+
+						}).catch(function(error){
+							console.log(error)
+						});
 
 					}
 
 				}
 			}
 			
-			console.log(thread_url_lists);
+			//console.log(thread_url_lists);
+			//save_data(thread_url_lists);
 		}).catch(function(error){
 			console.log(error);
 		});	
